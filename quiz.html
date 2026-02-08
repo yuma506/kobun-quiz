@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>古文単語106-135 ランダムQuiz</title>
+<style>
+body{
+  font-family:sans-serif;
+  text-align:center;
+  padding:20px;
+  background:#eef2ff;
+}
+button{
+  padding:12px 20px;
+  margin:8px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+.choice{background:white;box-shadow:0 3px 6px rgba(0,0,0,0.2);}
+.correct{background:#4CAF50;color:white;}
+.wrong{background:#f44336;color:white;}
+#result{font-size:18px;margin-top:10px;}
+#score{margin:10px;font-weight:bold;}
+.modeBtn{background:#333;color:white;}
+</style>
+</head>
+<body>
+
+<h2>古文単語106〜135</h2>
+<div id="score"></div>
+<h3 id="question"></h3>
+<div id="buttons"></div>
+<div id="result"></div>
+<br>
+<button class="modeBtn" onclick="reviewMode()">復習モード</button>
+<button class="modeBtn" onclick="normalMode()">通常モード</button>
+
+<script>
+
+const quizData = [
+{word:"106 更なり",answer:"言うまでもない"},
+{word:"107 かこつ",answer:"不平を言う"},
+{word:"108 さはれ",answer:"ええい、ままよ"},
+{word:"109 うるはし",answer:"きちんとしている"},
+{word:"110 やつす",answer:"目立たなくする"},
+{word:"111 ゆくりなし",answer:"突然だ"},
+{word:"112 こうず",answer:"疲れる"},
+{word:"113 よばふ",answer:"求婚する"},
+{word:"114 かき暗す",answer:"心を暗くする"},
+{word:"115 ねんず",answer:"我慢する"},
+{word:"116 なめし",answer:"無礼だ"},
+{word:"117 愛し",answer:"かわいい"},
+{word:"118 憂し",answer:"つらい"},
+{word:"119 眺む",answer:"物思いにふける"},
+{word:"120 疎かなり",answer:"おろそかだ"},
+{word:"121 難し",answer:"難しい"},
+{word:"122 ただなり",answer:"むなしい"},
+{word:"123 居る",answer:"座る"},
+{word:"124 訪ふ",answer:"訪れる"},
+{word:"125 失す",answer:"死ぬ"},
+{word:"126 忍ぶ",answer:"我慢する"},
+{word:"127 具す",answer:"引き連れる"},
+{word:"128 優なり",answer:"優美だ"},
+{word:"129 品",answer:"身分"},
+{word:"130 被く",answer:"かぶる"},
+{word:"131 所狭し",answer:"窮屈だ"},
+{word:"132 賢し",answer:"利口だ"},
+{word:"133 叶ふ",answer:"思い通りになる"},
+{word:"134 愛づ",answer:"ほめる"},
+{word:"135 逢ふ",answer:"結婚する"}
+];
+
+let currentSet = [...quizData];
+let wrongList = [];
+let score = 0;
+let total = 0;
+
+function shuffle(array){
+  return array.sort(()=>Math.random()-0.5);
+}
+
+function loadQuestion(){
+  if(currentSet.length === 0){
+    document.getElementById("question").innerHTML="🎉 全問終了！";
+    document.getElementById("buttons").innerHTML="";
+    return;
+  }
+
+  shuffle(currentSet);
+  const q = currentSet[0];
+  document.getElementById("question").innerHTML = q.word + " の意味は？";
+
+  const btnArea = document.getElementById("buttons");
+  btnArea.innerHTML="";
+  document.getElementById("result").innerHTML="";
+
+  const correct = q.answer;
+  const wrongOptions = quizData
+    .map(x=>x.answer)
+    .filter(a=>a!==correct)
+    .sort(()=>0.5-Math.random())
+    .slice(0,3);
+
+  const choices = shuffle([correct,...wrongOptions]);
+
+  choices.forEach(choice=>{
+    const btn = document.createElement("button");
+    btn.innerText = choice;
+    btn.className="choice";
+    btn.onclick = function(){
+      total++;
+      if(choice===correct){
+        score++;
+        btn.classList.add("correct");
+        document.getElementById("result").innerHTML="⭕ 正解！";
+      }else{
+        btn.classList.add("wrong");
+        document.getElementById("result").innerHTML="❌ 正解は「"+correct+"」";
+        wrongList.push(q);
+      }
+      document.getElementById("score").innerHTML=
+        "正解率: "+Math.round((score/total)*100)+"% ("+score+"/"+total+")";
+
+      currentSet.shift();
+      setTimeout(loadQuestion,1000);
+    };
+    btnArea.appendChild(btn);
+  });
+}
+
+function reviewMode(){
+  if(wrongList.length===0){
+    alert("復習する問題がありません！");
+    return;
+  }
+  currentSet = [...wrongList];
+  wrongList = [];
+  alert("復習モード開始！");
+  loadQuestion();
+}
+
+function normalMode(){
+  currentSet = [...quizData];
+  wrongList = [];
+  score = 0;
+  total = 0;
+  document.getElementById("score").innerHTML="";
+  alert("通常モード開始！");
+  loadQuestion();
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
